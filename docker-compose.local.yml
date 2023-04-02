@@ -1,0 +1,35 @@
+version: "3.9"
+services:
+  php-laravel-blog-fullstack-app:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: php-laravel-blog-fullstack:latest
+  php-laravel-blog-fullstack-mariadb:
+    container_name: php-laravel-blog-fullstack-mariadb
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_PASSWORD: ${DB_PASSWORD:-root}
+      MYSQL_USER: ${DB_USERNAME:-root}
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
+      interval: 5s
+      retries: 3
+      start_period: 5s
+      timeout: 5s
+    image: mariadb:latest
+    networks:
+      - network
+    ports:
+      - "${DB_PORT:-3306}:3306"
+    restart: always
+    volumes:
+      - php-laravel-blog-fullstack-mariadb_volume:/var/lib/mysql
+      - ./docker/mysql/config/my.cnf:/etc/mysql/my.cnf
+      - ./docker/mysql/entrypoint:/docker-entrypoint-initdb.d
+networks:
+  network:
+    driver: bridge
+volumes:
+  php-laravel-blog-fullstack-mariadb_volume:

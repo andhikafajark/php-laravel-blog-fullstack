@@ -1,0 +1,3 @@
+#!/bin/bash
+
+docker exec -it php-laravel-blog-fullstack-app bash

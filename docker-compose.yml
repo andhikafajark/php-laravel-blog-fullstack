@@ -1,0 +1,20 @@
+version: "3.9"
+services:
+  php-laravel-blog-fullstack-app:
+    container_name: php-laravel-blog-fullstack-app
+    healthcheck:
+      test: curl -f http://127.0.0.1
+      interval: 30s
+      retries: 3
+      start_period: 5s
+      timeout: 10s
+    networks:
+      - network
+    restart: always
+    ports:
+        - "${APP_PORT:-8000}:80"
+    volumes:
+      - ./:/var/www/html
+networks:
+  network:
+    driver: bridge
