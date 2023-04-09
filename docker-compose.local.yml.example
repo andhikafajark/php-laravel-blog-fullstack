@@ -5,6 +5,8 @@ services:
       context: ./
       dockerfile: Dockerfile
     image: php-laravel-blog-fullstack:latest
+    ports:
+      - "5173:5173"
   php-laravel-blog-fullstack-mariadb:
     container_name: php-laravel-blog-fullstack-mariadb
     environment:
