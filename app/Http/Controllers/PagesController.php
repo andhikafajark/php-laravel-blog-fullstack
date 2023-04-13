@@ -69,49 +69,6 @@ class PagesController extends Controller
     }
 
     /**
-     * Display blog page.
-     *
-     * @param Request $request
-     * @return Application|Factory|View
-     */
-    public function blog(Request $request): View|Factory|Application
-    {
-        $data = [
-            'title' => 'Blog',
-            'posts' => [
-                [
-                    'id' => 1,
-                    'title' => 'Title 1',
-                    'subtitle' => 'Quis hendrerit dolor magna eget est lorem ipsum dolor sit',
-                    'created_at' => Carbon::parse('2020-07-19'),
-                    'categories' => [],
-                ],
-                [
-                    'id' => 2,
-                    'title' => 'Title 2',
-                    'subtitle' => 'Senectus et netus et malesuada fames ac turpis egestas integer',
-                    'created_at' => Carbon::parse('2020-06-30'),
-                    'categories' => [
-                        'category 1'
-                    ],
-                ],
-                [
-                    'id' => 3,
-                    'title' => 'Title 3',
-                    'subtitle' => 'Vulputate ut pharetra sit amet aliquam id diam maecenas ultricies',
-                    'created_at' => Carbon::parse('2020-06-26'),
-                    'categories' => [
-                        'category 1',
-                        'category 2',
-                    ],
-                ]
-            ]
-        ];
-
-        return view($this->_routeView . __FUNCTION__, $data);
-    }
-
-    /**
      * Display post page.
      *
      * @param Request $request
