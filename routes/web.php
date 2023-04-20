@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PagesController;
 use Illuminate\Support\Facades\Route;
 
@@ -21,6 +22,12 @@ Route::name('pages.')->group(function () {
     Route::get('post', [PagesController::class, 'post'])->name('post');
 });
 
+Route::name('auth.')->group(function () {
+    Route::get('/login', [AuthController::class, 'login'])->name('login.show');
+    Route::post('/login', [AuthController::class, 'loginProcess'])->name('login.process');
+    Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+});
+
 Route::name('admin.')->group(function () {
-    Route::get('dashboard', [DashboardController::class, 'index'])->name('index');
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
 });
