@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -16,13 +15,22 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        User::insert([
+        $data = [
             [
                 'name' => 'Admin',
                 'email' => 'admin@admin.com',
                 'password' => Hash::make('admin'),
-                'created_at' => Carbon::now()
+                'created_by' => 1
             ]
-        ]);
+        ];
+
+        $this->_importWithArray($data);
+    }
+
+    private function _importWithArray(array $data): void
+    {
+        foreach ($data as $datum) {
+            User::create($datum);
+        }
     }
 }

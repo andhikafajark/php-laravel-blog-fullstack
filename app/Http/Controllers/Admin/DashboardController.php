@@ -33,8 +33,6 @@ class DashboardController extends Controller
      */
     public function index(Request $request): View|Factory|Application
     {
-        $data = [];
-
-        return view($this->_routeView . __FUNCTION__, $data);
+        return view($this->_routeView . __FUNCTION__);
     }
 }

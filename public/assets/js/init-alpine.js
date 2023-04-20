@@ -43,9 +43,9 @@ function data() {
     closeProfileMenu() {
       this.isProfileMenuOpen = false
     },
-    isPagesMenuOpen: false,
-    togglePagesMenu() {
-      this.isPagesMenuOpen = !this.isPagesMenuOpen
+    isReferenceMenuOpen: false,
+    toggleReferenceMenu() {
+      this.isReferenceMenuOpen = !this.isReferenceMenuOpen
     },
     // Modal
     isModalOpen: false,

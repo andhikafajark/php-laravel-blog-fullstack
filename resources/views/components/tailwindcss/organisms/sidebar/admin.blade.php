@@ -1,13 +1,14 @@
 <!-- Desktop sidebar -->
 <aside class="z-20 hidden w-64 overflow-y-auto bg-white dark:bg-gray-800 md:block flex-shrink-0">
     <div class="py-4 text-gray-500 dark:text-gray-400">
-        <a class="ml-6 text-lg font-bold text-gray-800 dark:text-gray-200" href="javascript:void(0)">{{ env('APP_NAME') }}</a>
+        <a class="ml-6 text-lg font-bold text-gray-800 dark:text-gray-200"
+           href="{{ route('admin.dashboard.index') }}">{{ env('APP_NAME') }}</a>
         <ul class="mt-6">
             <li class="relative px-6 py-3">
                     <span class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg"
                           aria-hidden="true"></span>
                 <a class="inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100"
-                   href="javascript:void(0)">
+                   href="{{ route('admin.dashboard.index') }}">
                     <svg
                         class="w-5 h-5"
                         aria-hidden="true"
@@ -46,7 +47,7 @@
             <li class="relative px-6 py-3">
                 <button
                     class="inline-flex items-center justify-between w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
-                    @click="togglePagesMenu" aria-haspopup="true">
+                    @click="toggleReferenceMenu" aria-haspopup="true">
                 <span class="inline-flex items-center">
                   <svg
                       class="w-5 h-5"
@@ -60,7 +61,7 @@
                     <path
                         d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path>
                   </svg>
-                  <span class="ml-4">Pages</span>
+                  <span class="ml-4">Reference</span>
                 </span>
                     <svg
                         class="w-4 h-4"
@@ -72,7 +73,7 @@
                               clip-rule="evenodd"></path>
                     </svg>
                 </button>
-                <template x-if="isPagesMenuOpen">
+                <template x-if="isReferenceMenuOpen">
                     <ul
                         x-transition:enter="transition-all ease-in-out duration-300"
                         x-transition:enter-start="opacity-25 max-h-0"
@@ -83,22 +84,19 @@
                         class="p-2 mt-2 space-y-2 overflow-hidden text-sm font-medium text-gray-500 rounded-md shadow-inner bg-gray-50 dark:text-gray-400 dark:bg-gray-900"
                         aria-label="submenu">
                         <li class="px-2 py-1 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200">
-                            <a class="w-full" href="javascript:void(0)">Login</a>
-                        </li>
-                        <li class="px-2 py-1 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200">
-                            <a class="w-full" href="javascript:void(0)">Blank</a>
+                            <a class="w-full" href="{{ route('admin.reference.category.index') }}">Category</a>
                         </li>
                     </ul>
                 </template>
             </li>
         </ul>
-{{--        <div class="px-6 my-6">--}}
-{{--            <button--}}
-{{--                class="flex items-center justify-between w-full px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">--}}
-{{--                Create account--}}
-{{--                <span class="ml-2" aria-hidden="true">+</span>--}}
-{{--            </button>--}}
-{{--        </div>--}}
+        {{--        <div class="px-6 my-6">--}}
+        {{--            <button--}}
+        {{--                class="flex items-center justify-between w-full px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">--}}
+        {{--                Create account--}}
+        {{--                <span class="ml-2" aria-hidden="true">+</span>--}}
+        {{--            </button>--}}
+        {{--        </div>--}}
     </div>
 </aside>
 <!-- Mobile sidebar -->
@@ -124,7 +122,8 @@
     @click.away="closeSideMenu"
     @keydown.escape="closeSideMenu">
     <div class="py-4 text-gray-500 dark:text-gray-400">
-        <a class="ml-6 text-lg font-bold text-gray-800 dark:text-gray-200" href="javascript:void(0)">{{ env('APP_NAME') }}</a>
+        <a class="ml-6 text-lg font-bold text-gray-800 dark:text-gray-200"
+           href="{{ route('admin.dashboard.index') }}">{{ env('APP_NAME') }}</a>
         <ul class="mt-6">
             <li class="relative px-6 py-3">
               <span
@@ -132,7 +131,7 @@
                   aria-hidden="true"
               ></span>
                 <a class="inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100"
-                   href="javascript:void(0)">
+                   href="{{ route('admin.dashboard.index') }}">
                     <svg
                         class="w-5 h-5"
                         aria-hidden="true"
@@ -172,7 +171,7 @@
             <li class="relative px-6 py-3">
                 <button
                     class="inline-flex items-center justify-between w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
-                    @click="togglePagesMenu"
+                    @click="toggleReferenceMenu"
                     aria-haspopup="true">
                 <span class="inline-flex items-center">
                   <svg
@@ -187,7 +186,7 @@
                     <path
                         d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path>
                   </svg>
-                  <span class="ml-4">Pages</span>
+                  <span class="ml-4">Reference</span>
                 </span>
                     <svg
                         class="w-4 h-4"
@@ -199,7 +198,7 @@
                               clip-rule="evenodd"></path>
                     </svg>
                 </button>
-                <template x-if="isPagesMenuOpen">
+                <template x-if="isReferenceMenuOpen">
                     <ul
                         x-transition:enter="transition-all ease-in-out duration-300"
                         x-transition:enter-start="opacity-25 max-h-0"
@@ -210,21 +209,18 @@
                         class="p-2 mt-2 space-y-2 overflow-hidden text-sm font-medium text-gray-500 rounded-md shadow-inner bg-gray-50 dark:text-gray-400 dark:bg-gray-900"
                         aria-label="submenu">
                         <li class="px-2 py-1 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200">
-                            <a class="w-full" href="javascript:void(0)">Login</a>
-                        </li>
-                        <li class="px-2 py-1 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200">
-                            <a class="w-full" href="javascript:void(0)">Blank</a>
+                            <a class="w-full" href="{{ route('admin.reference.category.index') }}">Category</a>
                         </li>
                     </ul>
                 </template>
             </li>
         </ul>
-{{--        <div class="px-6 my-6">--}}
-{{--            <button--}}
-{{--                class="flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">--}}
-{{--                Create account--}}
-{{--                <span class="ml-2" aria-hidden="true">+</span>--}}
-{{--            </button>--}}
-{{--        </div>--}}
+        {{--        <div class="px-6 my-6">--}}
+        {{--            <button--}}
+        {{--                class="flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">--}}
+        {{--                Create account--}}
+        {{--                <span class="ml-2" aria-hidden="true">+</span>--}}
+        {{--            </button>--}}
+        {{--        </div>--}}
     </div>
 </aside>
