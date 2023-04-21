@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\Admin\Reference;
+namespace App\Http\Controllers\Admin\Blog;
 
 use App\Helpers\Log;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\Reference\Category\CreateRequest;
-use App\Http\Requests\Admin\Reference\Category\UpdateRequest;
-use App\Models\Category;
+use App\Http\Requests\Admin\Blog\Post\CreateRequest;
+use App\Http\Requests\Admin\Blog\Post\UpdateRequest;
+use App\Models\Post;
 use App\Providers\RouteServiceProvider;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
@@ -18,15 +18,15 @@ use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 use Yajra\DataTables\DataTables;
 
-class CategoryController extends Controller
+class PostController extends Controller
 {
     /**
      * Create a new controller instance.
      */
     public function __construct(
-        private readonly string $_route = 'admin.reference.category.',
-        private readonly string $_routeView = 'admin.reference.category.',
-        private readonly string $_title = 'Category',
+        private readonly string $_route = 'admin.blog.post.',
+        private readonly string $_routeView = 'admin.blog.post.',
+        private readonly string $_title = 'Post',
     )
     {
         view()->share([
@@ -45,7 +45,7 @@ class CategoryController extends Controller
     public function index(Request $request): View|Factory|JsonResponse|Application
     {
         if ($request->ajax()) {
-            $data = Category::query();
+            $data = Post::query();
 
             return DataTables::of($data)
                 ->addIndexColumn()
@@ -59,7 +59,7 @@ class CategoryController extends Controller
         $data = [
             'breadcrumbs' => [
                 'Dashboard' => RouteServiceProvider::HOME,
-                'Category' => null
+                'Post' => null
             ]
         ];
 
@@ -77,10 +77,9 @@ class CategoryController extends Controller
             'title' => 'Create ' . $this->_title,
             'breadcrumbs' => [
                 'Dashboard' => RouteServiceProvider::HOME,
-                'Category' => $this->_route . 'index',
+                'Post' => $this->_route . 'index',
                 'Create' => null
-            ],
-            'types' => ['post']
+            ]
         ];
 
         return view($this->_routeView . __FUNCTION__, $data);
@@ -100,7 +99,7 @@ class CategoryController extends Controller
 
             $data = $request->validated();
 
-            Category::create($data);
+            Post::create($data);
 
             DB::commit();
 
@@ -121,20 +120,19 @@ class CategoryController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param Category $category
+     * @param Post $post
      * @return Application|Factory|View
      */
-    public function edit(Category $category): View|Factory|Application
+    public function edit(Post $post): View|Factory|Application
     {
         $data = [
             'title' => 'Edit ' . $this->_title,
             'breadcrumbs' => [
                 'Dashboard' => RouteServiceProvider::HOME,
-                'Category' => $this->_route . 'index',
+                'Post' => $this->_route . 'index',
                 'Edit' => null
             ],
-            'category' => $category,
-            'types' => ['post']
+            'post' => $post
         ];
 
         return view($this->_routeView . __FUNCTION__, $data);
@@ -144,18 +142,18 @@ class CategoryController extends Controller
      * Update the specified resource in storage.
      *
      * @param UpdateRequest $request
-     * @param Category $category
+     * @param Post $post
      * @return JsonResponse
      * @throws Exception
      */
-    public function update(UpdateRequest $request, Category $category): JsonResponse
+    public function update(UpdateRequest $request, Post $post): JsonResponse
     {
         try {
             DB::beginTransaction();
 
             $data = $request->validated();
 
-            $category->update($data);
+            $post->update($data);
 
             DB::commit();
 
@@ -177,16 +175,16 @@ class CategoryController extends Controller
      * Remove the specified resource from storage.
      *
      * @param Request $request
-     * @param Category $category
+     * @param Post $post
      * @return JsonResponse
      * @throws Exception
      */
-    public function destroy(Request $request, Category $category): JsonResponse
+    public function destroy(Request $request, Post $post): JsonResponse
     {
         try {
             DB::beginTransaction();
 
-            $category->delete();
+            $post->delete();
 
             DB::commit();
 

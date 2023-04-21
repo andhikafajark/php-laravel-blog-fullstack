@@ -43,6 +43,10 @@ function data() {
     closeProfileMenu() {
       this.isProfileMenuOpen = false
     },
+    isBlogMenuOpen: false,
+    toggleBlogMenu() {
+      this.isBlogMenuOpen = !this.isBlogMenuOpen
+    },
     isReferenceMenuOpen: false,
     toggleReferenceMenu() {
       this.isReferenceMenuOpen = !this.isReferenceMenuOpen

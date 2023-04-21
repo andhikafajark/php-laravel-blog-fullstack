@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\Blog\PostController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\Reference\CategoryController;
 use App\Http\Controllers\AuthController;
@@ -32,6 +33,14 @@ Route::name('auth.')->group(function () {
 Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     // Dashboard
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
+
+    // Blog
+    Route::name('blog.')->group(function () {
+        // Post
+        Route::resource('post', PostController::class, [
+            'except' => ['show']
+        ]);
+    });
 
     // Reference
     Route::name('reference.')->group(function () {

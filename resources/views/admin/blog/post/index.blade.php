@@ -23,8 +23,8 @@
                     <thead>
                     <tr>
                         <th>No</th>
-                        <th>Type</th>
                         <th>Title</th>
+                        <th>Active</th>
                         <th>Action</th>
                     </tr>
                     </thead>
@@ -64,8 +64,8 @@
                 },
                 columns: [
                     {data: 'DT_RowIndex', orderable: false, searchable: false, className: 'dt-center'},
-                    {data: 'type'},
                     {data: 'title'},
+                    {data: 'is_active', searchable: false},
                     {data: 'action', orderable: false, searchable: false}
                 ]
             });

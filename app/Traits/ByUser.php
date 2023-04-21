@@ -14,9 +14,9 @@ trait ByUser
             $model->updated_by = $model->created_by ?? auth()->id();
         });
 
-        static::deleting(function ($model) {
-            $model->deleted_by = $model->created_by ?? auth()->id();
-            $model->save();
-        });
+//        static::deleting(function ($model) {
+//            $model->deleted_by = $model->created_by ?? auth()->id();
+//            $model->save();
+//        });
     }
 }
