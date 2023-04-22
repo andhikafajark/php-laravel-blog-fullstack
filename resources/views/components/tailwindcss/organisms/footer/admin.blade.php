@@ -20,7 +20,30 @@
     }
 
     function globalHandler() {
-        $('#logout').on('click', async function (e) {
+        $('body').on('change', 'input[type="file"]', function (e) {
+            const imagePreviewElement = $(e.target).siblings('[data-type="image-preview"]')
+
+            if (!e.target?.files?.length) {
+                return imagePreviewElement
+                    .removeClass('border mt-3 hidden')
+                    .attr('src', '')
+            }
+
+            const mimeType = e.target.files[0].type
+
+            if (mimeType.split('/')[0] !== 'image') {
+                return imagePreviewElement
+                    .removeClass('border mt-3 hidden')
+                    .attr('src', '')
+            }
+
+            return imagePreviewElement
+                .addClass('border mt-3')
+                .attr('src', URL.createObjectURL(e.target.files[0]))
+                .removeClass('hidden')
+        })
+
+        $(document).on('click', '#logout', async function (e) {
             e.preventDefault()
 
             const resAlert = await showAlertConfirm({
@@ -40,7 +63,7 @@
                             title: response?.message,
                             timer: 1500
                         }).then(() => {
-                            window.location.href = response.data?.route
+                            window.location.href = response?.data?.route
                         })
                     }
                 }

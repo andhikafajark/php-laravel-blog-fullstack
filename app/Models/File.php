@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Post extends Model
+class File extends Model
 {
     use HasFactory, HasUuid, ByUser;
 
@@ -25,27 +25,11 @@ class Post extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'is_active' => 'boolean'
+        'size' => 'integer'
     ];
-
-    /**
-     * Set title attribute and generate slug attribute
-     * @param $value
-     * @return void
-     */
-    public function setTitleAttribute($value): void
-    {
-        $this->attributes['title'] = $value;
-        $this->attributes['slug'] = str($value)->slug();
-    }
 
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
-    }
-
-    public function headlineImage(): BelongsTo
-    {
-        return $this->belongsTo(File::class, 'headline_image_id');
     }
 }

@@ -25,6 +25,18 @@
                                   class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">{{ $post->content ?? '' }}</textarea>
                         <label id="content-error" class="error text-xs text-red-500" for="content"></label>
                     </div>
+                    <div class="mb-4">
+                        <label for="headline_image"
+                               class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">Headline Image</label>
+                        <input type="file" id="headline_image" name="headline_image"
+                               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                               placeholder="Headline Image">
+                        <label id="headline_image-error" class="error text-xs text-red-500" for="headline_image"></label>
+                        <img
+                            src="{{ $post->headlineImage && Storage::exists($post->headlineImage->path . $post->headlineImage->hash_name) ? asset(Storage::url($post->headlineImage->path . $post->headlineImage->hash_name)) : '' }}"
+                            class="max-h-[200px] block rounded-lg mx-auto {{ $post->headlineImage && Storage::exists($post->headlineImage->path . $post->headlineImage->hash_name) ? 'border mt-3' : 'hidden' }}"
+                            data-type="image-preview"/>
+                    </div>
                     <div class="flex items-start mb-4">
                         <div class="flex items-center h-5">
                             <input id="is_active" type="checkbox" name="is_active" @checked($post->is_active ?? false)

@@ -28,7 +28,7 @@ class UpdateRequest extends FormRequest
         return [
             'title' => $this->input('title') !== $post->title ? 'bail|required|string|max:255|unique:posts' : '',
             'content' => 'bail|required|string',
-//            'headline_image' => 'bail|required|image',
+            'headline_image' => 'bail|nullable|image',
             'is_active' => 'bail|required|boolean'
         ];
     }

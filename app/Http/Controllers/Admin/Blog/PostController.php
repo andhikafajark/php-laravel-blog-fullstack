@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Blog;
 
+use App\Helpers\File;
 use App\Helpers\Log;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Blog\Post\CreateRequest;
@@ -27,6 +28,7 @@ class PostController extends Controller
         private readonly string $_route = 'admin.blog.post.',
         private readonly string $_routeView = 'admin.blog.post.',
         private readonly string $_title = 'Post',
+        private readonly string $_pathFileHeadlineImage = 'public/files/blogs/headlines/',
     )
     {
         view()->share([
@@ -45,14 +47,17 @@ class PostController extends Controller
     public function index(Request $request): View|Factory|JsonResponse|Application
     {
         if ($request->ajax()) {
-            $data = Post::query();
+            $data = Post::with('headlineImage')->newQuery();
 
             return DataTables::of($data)
                 ->addIndexColumn()
+                ->addColumn('headline_image', function ($data) {
+                    return view($this->_routeView . 'components.headline-image-datatables', compact('data'));
+                })
                 ->addColumn('action', function ($data) {
                     return view($this->_routeView . 'components.action-datatables', compact('data'));
                 })
-                ->rawColumns(['action'])
+                ->rawColumns(['headline_image', 'action'])
                 ->toJson();
         }
 
@@ -99,6 +104,16 @@ class PostController extends Controller
 
             $data = $request->validated();
 
+            $file = File::save([
+                'origin' => 'public',
+                'file' => $data['headline_image'],
+                'path' => $this->_pathFileHeadlineImage
+            ]);
+
+            unset($data['headline_image']);
+
+            $data['headline_image_id'] = $file->id;
+
             Post::create($data);
 
             DB::commit();
@@ -110,6 +125,8 @@ class PostController extends Controller
             ], Response::HTTP_CREATED);
         } catch (Exception $e) {
             DB::rollBack();
+
+            if ($file) File::delete($file->path . $file->hash_name);
 
             Log::exception($e, __METHOD__);
 
@@ -132,7 +149,7 @@ class PostController extends Controller
                 'Post' => $this->_route . 'index',
                 'Edit' => null
             ],
-            'post' => $post
+            'post' => $post->with('headlineImage')->find($post->id)
         ];
 
         return view($this->_routeView . __FUNCTION__, $data);
@@ -153,6 +170,19 @@ class PostController extends Controller
 
             $data = $request->validated();
 
+            if (!empty($data['headline_image'])) {
+                $file = File::save([
+                    'id' => $post->headline_image_id,
+                    'origin' => 'public',
+                    'file' => $data['headline_image'],
+                    'path' => $this->_pathFileHeadlineImage
+                ]);
+
+                unset($data['headline_image']);
+
+                $data['headline_image_id'] = $file->id;
+            }
+
             $post->update($data);
 
             DB::commit();
@@ -164,6 +194,8 @@ class PostController extends Controller
             ], Response::HTTP_OK);
         } catch (Exception $e) {
             DB::rollBack();
+
+            if ($file && !empty($data['headline_image'])) File::delete($file->path . $file->hash_name);
 
             Log::exception($e, __METHOD__);
 
@@ -183,6 +215,8 @@ class PostController extends Controller
     {
         try {
             DB::beginTransaction();
+
+            if ($post->headline_image_id) File::delete($post->headline_image_id);
 
             $post->delete();
 

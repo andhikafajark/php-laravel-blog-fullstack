@@ -26,7 +26,7 @@ class CreateRequest extends FormRequest
         return [
             'title' => 'bail|required|string|max:255|unique:posts',
             'content' => 'bail|required|string',
-//            'headline_image' => 'bail|required|image',
+            'headline_image' => 'bail|required|image',
             'is_active' => 'bail|required|boolean'
         ];
     }

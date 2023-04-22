@@ -22,6 +22,15 @@
                                   placeholder="Content ..." required></textarea>
                         <label id="content-error" class="error text-xs text-red-500" for="content"></label>
                     </div>
+                    <div class="mb-4">
+                        <label for="headline_image"
+                               class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">Headline Image</label>
+                        <input type="file" id="headline_image" name="headline_image"
+                               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                               placeholder="Headline Image" required>
+                        <label id="headline_image-error" class="error text-xs text-red-500" for="headline_image"></label>
+                        <img src="" class="max-h-[200px] block rounded-lg mx-auto hidden" data-type="image-preview"/>
+                    </div>
                     <div class="flex items-start mb-4">
                         <div class="flex items-center h-5">
                             <input id="is_active" type="checkbox" name="is_active"
@@ -68,6 +77,7 @@
                                     timer: 1500
                                 })
 
+                                $(form).find('[data-type="image-preview"]').removeClass('border mt-3 hidden').attr('src', '')
                                 $(form).find('.select2').val(null).trigger('change')
                                 initSelect2()
                                 $(form).trigger('reset')
