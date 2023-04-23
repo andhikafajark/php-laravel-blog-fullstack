@@ -39,7 +39,7 @@
                                     @forelse($post['categories'] as $category)
 
                                         <span
-                                            class="inline-block rounded-full px-2 py-1 font-body text-sm {{ $mapBackgroundAndTextColor[rand(0, count($mapBackgroundAndTextColor) - 1)] }}">{{ $category }}</span>
+                                            class="inline-block rounded-full px-2 py-1 font-body text-sm {{ $mapBackgroundAndTextColor[rand(0, count($mapBackgroundAndTextColor) - 1)] }}">{{ $category->title ?? '' }}</span>
 
                                     @empty @endforelse
 
@@ -49,12 +49,12 @@
 
                             <a href="{{ route('pages.post') }}"
                                class="block font-body text-lg font-semibold text-primary transition-colors hover:text-green dark:text-white dark:hover:text-secondary">
-                                {{ $post['title'] ?? '' }}
+                                {{ $post->title ?? '' }}
                             </a>
-                            <p class="font-body font-light text-primary dark:text-white">{{ $post['subtitle'] ?? '' }}</p>
+                            <p class="font-body font-light text-primary dark:text-white">{{ $post->subtitle ?? '' }}</p>
                             <div class="flex items-center pt-4">
                                 <p class="pr-2 font-body font-light text-primary dark:text-white">
-                                    {{ ($post['created_at'] ?? null) ? $post['created_at']->format('F d, Y') : '' }}
+                                    {{ ($post->created_at ?? null) ? $post->created_at->format('F d, Y') : '' }}
                                 </p>
                             </div>
                         </div>
@@ -62,19 +62,28 @@
                     @empty @endforelse
 
                 </div>
-                <div class="flex pt-8 lg:pt-16">
-                    <span
-                        class="cursor-pointer border-2 border-secondary px-3 py-1 font-body font-medium text-secondary">1</span>
-                    <span
-                        class="ml-3 cursor-pointer border-2 border-primary px-3 py-1 font-body font-medium text-primary transition-colors hover:border-secondary hover:text-secondary dark:border-green-light dark:text-white dark:hover:border-secondary dark:hover:text-secondary">2</span>
-                    <span
-                        class="ml-3 cursor-pointer border-2 border-primary px-3 py-1 font-body font-medium text-primary transition-colors hover:border-secondary hover:text-secondary dark:border-green-light dark:text-white dark:hover:border-secondary dark:hover:text-secondary">3</span>
-                    <span
-                        class="group ml-3 flex cursor-pointer items-center border-2 border-primary px-3 py-1 font-body font-medium text-primary transition-colors hover:border-secondary hover:text-secondary dark:border-green-light dark:text-white dark:hover:border-secondary dark:hover:text-secondary">
-                        Next
-                        <i class="bx bx-right-arrow-alt ml-1 text-primary transition-colors group-hover:text-secondary dark:text-white"></i>
-                    </span>
-                </div>
+
+                @if($posts->hasPages())
+
+                    <div class="mt-10">
+                        {{ $posts->links() }}
+                    </div>
+
+                @endif
+
+                {{--                <div class="flex pt-8 lg:pt-16">--}}
+                {{--                    <span--}}
+                {{--                        class="cursor-pointer border-2 border-secondary px-3 py-1 font-body font-medium text-secondary">1</span>--}}
+                {{--                    <span--}}
+                {{--                        class="ml-3 cursor-pointer border-2 border-primary px-3 py-1 font-body font-medium text-primary transition-colors hover:border-secondary hover:text-secondary dark:border-green-light dark:text-white dark:hover:border-secondary dark:hover:text-secondary">2</span>--}}
+                {{--                    <span--}}
+                {{--                        class="ml-3 cursor-pointer border-2 border-primary px-3 py-1 font-body font-medium text-primary transition-colors hover:border-secondary hover:text-secondary dark:border-green-light dark:text-white dark:hover:border-secondary dark:hover:text-secondary">3</span>--}}
+                {{--                    <span--}}
+                {{--                        class="group ml-3 flex cursor-pointer items-center border-2 border-primary px-3 py-1 font-body font-medium text-primary transition-colors hover:border-secondary hover:text-secondary dark:border-green-light dark:text-white dark:hover:border-secondary dark:hover:text-secondary">--}}
+                {{--                        Next--}}
+                {{--                        <i class="bx bx-right-arrow-alt ml-1 text-primary transition-colors group-hover:text-secondary dark:text-white"></i>--}}
+                {{--                    </span>--}}
+                {{--                </div>--}}
             </div>
         </div>
     </div>
