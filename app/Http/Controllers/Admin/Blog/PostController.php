@@ -7,6 +7,7 @@ use App\Helpers\Log;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Blog\Post\CreateRequest;
 use App\Http\Requests\Admin\Blog\Post\UpdateRequest;
+use App\Models\Category;
 use App\Models\Post;
 use App\Providers\RouteServiceProvider;
 use Exception;
@@ -54,6 +55,9 @@ class PostController extends Controller
                 ->addColumn('headline_image', function ($data) {
                     return view($this->_routeView . 'components.headline-image-datatables', compact('data'));
                 })
+                ->addColumn('category', function ($data) {
+                    return $data->categories->pluck('title')->join(', ');
+                })
                 ->addColumn('action', function ($data) {
                     return view($this->_routeView . 'components.action-datatables', compact('data'));
                 })
@@ -84,7 +88,8 @@ class PostController extends Controller
                 'Dashboard' => RouteServiceProvider::HOME,
                 'Post' => $this->_route . 'index',
                 'Create' => null
-            ]
+            ],
+            'categories' => Category::getAllWithType('post')
         ];
 
         return view($this->_routeView . __FUNCTION__, $data);
@@ -114,7 +119,12 @@ class PostController extends Controller
 
             $data['headline_image_id'] = $file->id;
 
-            Post::create($data);
+            Post::create($data)
+                ->categories()
+                ->sync(array_fill_keys($data['categories'], [
+                    'created_by' => auth()->id(),
+                    'updated_by' => auth()->id()
+                ]));
 
             DB::commit();
 
@@ -149,7 +159,8 @@ class PostController extends Controller
                 'Post' => $this->_route . 'index',
                 'Edit' => null
             ],
-            'post' => $post->with('headlineImage')->find($post->id)
+            'post' => $post->with('headlineImage')->find($post->id),
+            'categories' => Category::getAllWithType('post')
         ];
 
         return view($this->_routeView . __FUNCTION__, $data);
@@ -184,6 +195,11 @@ class PostController extends Controller
             }
 
             $post->update($data);
+            $post->categories()
+                ->sync(array_fill_keys($data['categories'], [
+                    'created_by' => auth()->id(),
+                    'updated_by' => auth()->id()
+                ]));
 
             DB::commit();
 
@@ -218,6 +234,7 @@ class PostController extends Controller
 
             if ($post->headline_image_id) File::delete($post->headline_image_id);
 
+            $post->categories()->sync([]);
             $post->delete();
 
             DB::commit();

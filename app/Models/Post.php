@@ -7,6 +7,7 @@ use App\Traits\HasUUID;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class Post extends Model
 {
@@ -39,13 +40,33 @@ class Post extends Model
         $this->attributes['slug'] = str($value)->slug();
     }
 
+    /**
+     * Get creator data for the post.
+     *
+     * @return BelongsTo
+     */
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    /**
+     * Get headline image for the post.
+     *
+     * @return BelongsTo
+     */
     public function headlineImage(): BelongsTo
     {
         return $this->belongsTo(File::class, 'headline_image_id');
+    }
+
+    /**
+     * Get all the categories for the post.
+     *
+     * @return MorphToMany
+     */
+    public function categories(): MorphToMany
+    {
+        return $this->morphToMany(Category::class, 'categorizable')->withTimestamps();
     }
 }

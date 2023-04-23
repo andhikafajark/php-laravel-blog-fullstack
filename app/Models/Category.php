@@ -30,6 +30,7 @@ class Category extends Model
 
     /**
      * Set title attribute and generate slug attribute
+     *
      * @param $value
      * @return void
      */
@@ -39,8 +40,24 @@ class Category extends Model
         $this->attributes['slug'] = str($value)->slug();
     }
 
+    /**
+     * Get creator data for the category.
+     *
+     * @return BelongsTo
+     */
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * Get all category by type
+     *
+     * @param string $type
+     * @return mixed
+     */
+    public static function getAllWithType(string $type): mixed
+    {
+        return self::where('type', $type)->get();
     }
 }

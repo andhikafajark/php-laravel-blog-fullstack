@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class File extends Model
+class Categorizable extends Model
 {
     use HasFactory, HasUuid, ByUser;
 
@@ -20,16 +20,7 @@ class File extends Model
     protected $guarded = ['id', 'created_at', 'updated_at'];
 
     /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'size' => 'integer'
-    ];
-
-    /**
-     * Get creator data for the file.
+     * Get creator data for the categorizable.
      *
      * @return BelongsTo
      */

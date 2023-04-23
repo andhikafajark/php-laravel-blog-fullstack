@@ -8,6 +8,21 @@
             <div class="w-full overflow-hidden px-4 py-3 mt-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
                 <form id="form" action="{{ route($route . 'store') }}" method="post">
                     <div class="mb-4">
+                        <label for="categories"
+                               class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-400">Category</label>
+                        <select id="categories" name="categories[]" multiple data-placeholder="Choose" required
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 select2">
+
+                            @forelse($categories as $category)
+
+                                <option value="{{ $category->id }}">{{ $category->title }}</option>
+
+                            @empty @endforelse
+
+                        </select>
+                        <label id="categories-error" class="error text-xs text-red-500" for="categories"></label>
+                    </div>
+                    <div class="mb-4">
                         <label for="title"
                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">Title</label>
                         <input type="text" id="title" name="title" placeholder="Title" required
@@ -24,11 +39,13 @@
                     </div>
                     <div class="mb-4">
                         <label for="headline_image"
-                               class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">Headline Image</label>
+                               class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">Headline
+                            Image</label>
                         <input type="file" id="headline_image" name="headline_image"
                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                placeholder="Headline Image" required>
-                        <label id="headline_image-error" class="error text-xs text-red-500" for="headline_image"></label>
+                        <label id="headline_image-error" class="error text-xs text-red-500"
+                               for="headline_image"></label>
                         <img src="" class="max-h-[200px] block rounded-lg mx-auto hidden" data-type="image-preview"/>
                     </div>
                     <div class="flex items-start mb-4">
@@ -36,7 +53,8 @@
                             <input id="is_active" type="checkbox" name="is_active"
                                    class="w-4 h-4 bg-gray-50 rounded border border-gray-300 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800">
                         </div>
-                        <label for="is_active" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-400">Active</label>
+                        <label for="is_active"
+                               class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-400">Active</label>
                         <label id="is_active-error" class="error text-xs text-red-500" for="is_active"></label>
                     </div>
                     <div class="flex justify-end gap-1">

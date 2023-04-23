@@ -24,6 +24,8 @@ class CreateRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'categories' => 'required|array|min:1',
+            'categories.*' => 'required|string|distinct|exists:categories,id',
             'title' => 'bail|required|string|max:255|unique:posts',
             'content' => 'bail|required|string',
             'headline_image' => 'bail|required|image',

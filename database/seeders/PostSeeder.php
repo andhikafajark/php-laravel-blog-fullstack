@@ -17,15 +17,25 @@ class PostSeeder extends Seeder
                 'title' => 'Test Title 1',
                 'slug' => str('Test Title 1')->slug(),
                 'content' => 'Test Content 1',
-                'is_active' => true,
-                'created_by' => 1
+                'is_active' => false,
+                'created_by' => 1,
+                'categories' => []
             ],
             [
                 'title' => 'Test Title 2',
                 'slug' => str('Test Title 2')->slug(),
                 'content' => 'Test Content 2',
                 'is_active' => true,
-                'created_by' => 1
+                'created_by' => 1,
+                'categories' => [1]
+            ],
+            [
+                'title' => 'Test Title 3',
+                'slug' => str('Test Title 3')->slug(),
+                'content' => 'Test Content 3',
+                'is_active' => true,
+                'created_by' => 1,
+                'categories' => [1, 2]
             ]
         ];
 
@@ -35,7 +45,14 @@ class PostSeeder extends Seeder
     private function _importWithArray(array $data): void
     {
         foreach ($data as $datum) {
-            Post::create($datum);
+            $categories = $datum['categories'] ?? [];
+            unset($datum['categories']);
+
+            Post::create($datum)
+                ->categories()
+                ->sync(array_fill_keys($categories, [
+                    'created_by' => 1
+                ]));
         }
     }
 }

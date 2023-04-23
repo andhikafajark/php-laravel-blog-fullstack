@@ -26,6 +26,8 @@ class UpdateRequest extends FormRequest
         $post = $this->route('post');
 
         return [
+            'categories' => 'required|array|min:1',
+            'categories.*' => 'required|string|distinct|exists:categories,id',
             'title' => $this->input('title') !== $post->title ? 'bail|required|string|max:255|unique:posts' : '',
             'content' => 'bail|required|string',
             'headline_image' => 'bail|nullable|image',

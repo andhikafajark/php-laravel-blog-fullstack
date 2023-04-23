@@ -16,14 +16,14 @@ class CategorySeeder extends Seeder
             [
                 'title' => 'Technology',
                 'slug' => str('Technology')->slug(),
-                'type' => 'blog',
+                'type' => 'post',
                 'is_active' => true,
                 'created_by' => 1
             ],
             [
                 'title' => 'Animal',
                 'slug' => str('Animal')->slug(),
-                'type' => 'blog',
+                'type' => 'post',
                 'is_active' => true,
                 'created_by' => 1
             ]
