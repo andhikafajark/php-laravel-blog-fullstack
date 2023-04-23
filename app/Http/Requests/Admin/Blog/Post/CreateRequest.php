@@ -27,6 +27,7 @@ class CreateRequest extends FormRequest
             'categories' => 'required|array|min:1',
             'categories.*' => 'required|string|distinct|exists:categories,id',
             'title' => 'bail|required|string|max:255|unique:posts',
+            'subtitle' => 'bail|required|string|max:255',
             'content' => 'bail|required|string',
             'headline_image' => 'bail|required|image',
             'is_active' => 'bail|required|boolean'

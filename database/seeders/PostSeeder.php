@@ -16,6 +16,7 @@ class PostSeeder extends Seeder
             [
                 'title' => 'Test Title 1',
                 'slug' => str('Test Title 1')->slug(),
+                'subtitle' => 'Subtitle 1',
                 'content' => 'Test Content 1',
                 'is_active' => false,
                 'created_by' => 1,
@@ -24,6 +25,7 @@ class PostSeeder extends Seeder
             [
                 'title' => 'Test Title 2',
                 'slug' => str('Test Title 2')->slug(),
+                'subtitle' => 'Subtitle 2',
                 'content' => 'Test Content 2',
                 'is_active' => true,
                 'created_by' => 1,
@@ -32,6 +34,7 @@ class PostSeeder extends Seeder
             [
                 'title' => 'Test Title 3',
                 'slug' => str('Test Title 3')->slug(),
+                'subtitle' => 'Subtitle 3',
                 'content' => 'Test Content 3',
                 'is_active' => true,
                 'created_by' => 1,

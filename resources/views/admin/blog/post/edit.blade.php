@@ -35,6 +35,13 @@
                         <label id="title-error" class="error text-xs text-red-500" for="title"></label>
                     </div>
                     <div class="mb-4">
+                        <label for="subtitle"
+                               class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-400">Subtitle</label>
+                        <textarea id="subtitle" rows="4" name="subtitle" placeholder="Subtitle ..." required
+                                  class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">{{ $post->subtitle ?? '' }}</textarea>
+                        <label id="subtitle-error" class="error text-xs text-red-500" for="subtitle"></label>
+                    </div>
+                    <div class="mb-4">
                         <label for="content"
                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-400">Content</label>
                         <textarea id="content" rows="4" name="content" placeholder="Content ..." required
@@ -46,8 +53,7 @@
                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">Headline
                             Image</label>
                         <input type="file" id="headline_image" name="headline_image"
-                               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                               placeholder="Headline Image">
+                               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                         <label id="headline_image-error" class="error text-xs text-red-500"
                                for="headline_image"></label>
                         <img

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->uuid()->unique();
             $table->string('title')->unique();
             $table->string('slug')->unique();
+            $table->string('subtitle');
             $table->longText('content');
             $table->unsignedBigInteger('headline_image_id')->nullable();
             $table->foreign('headline_image_id')->references('id')->on('files')->cascadeOnUpdate()->nullOnDelete();

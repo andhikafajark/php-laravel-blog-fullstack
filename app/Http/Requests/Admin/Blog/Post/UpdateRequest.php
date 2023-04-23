@@ -29,6 +29,7 @@ class UpdateRequest extends FormRequest
             'categories' => 'required|array|min:1',
             'categories.*' => 'required|string|distinct|exists:categories,id',
             'title' => $this->input('title') !== $post->title ? 'bail|required|string|max:255|unique:posts' : '',
+            'subtitle' => 'bail|required|string|max:255',
             'content' => 'bail|required|string',
             'headline_image' => 'bail|nullable|image',
             'is_active' => 'bail|required|boolean'
