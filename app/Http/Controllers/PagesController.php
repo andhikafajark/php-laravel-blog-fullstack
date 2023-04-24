@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
-use Carbon\Carbon;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -36,7 +35,7 @@ class PagesController extends Controller
     {
         $data = [
             'title' => 'Home',
-            'posts' => Post::with('categories')->simplePaginate(5)
+            'posts' => Post::with('categories')->paginate(1)
         ];
 
         return view($this->_routeView . __FUNCTION__, $data);
@@ -46,12 +45,16 @@ class PagesController extends Controller
      * Display post page.
      *
      * @param Request $request
+     * @param Post $post
      * @return Application|Factory|View
      */
-    public function post(Request $request): View|Factory|Application
+    public function post(Request $request, Post $post): View|Factory|Application
     {
         $data = [
-            'title' => 'Contact'
+            'title' => 'Contact',
+            'post' => $post->with(['categories', 'creator', 'headlineImage'])->find($post->id),
+            'previous' => Post::where('id', '<', $post->id)->latest('id')->first(),
+            'next' => Post::where('id', '>', $post->id)->oldest('id')->first(),
         ];
 
         return view($this->_routeView . __FUNCTION__, $data);

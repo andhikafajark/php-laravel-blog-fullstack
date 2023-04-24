@@ -32,11 +32,11 @@
 
                         <div class="border-b border-grey-lighter pb-8 mb-3">
 
-                            @if(!empty($post['categories']))
+                            @if($post->categories->isNotEmpty())
 
                                 <div class="flex flex-wrap gap-2 mb-3">
 
-                                    @forelse($post['categories'] as $category)
+                                    @forelse($post->categories as $category)
 
                                         <span
                                             class="inline-block rounded-full px-2 py-1 font-body text-sm {{ $mapBackgroundAndTextColor[rand(0, count($mapBackgroundAndTextColor) - 1)] }}">{{ $category->title ?? '' }}</span>
@@ -47,7 +47,7 @@
 
                             @endif
 
-                            <a href="{{ route('pages.post') }}"
+                            <a href="{{ route('pages.post', ($post->slug ?? null)) }}"
                                class="block font-body text-lg font-semibold text-primary transition-colors hover:text-green dark:text-white dark:hover:text-secondary">
                                 {{ $post->title ?? '' }}
                             </a>
