@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Admin\Blog;
 use App\Helpers\File;
 use App\Helpers\Log;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\Blog\Post\CommentRequest;
 use App\Http\Requests\Admin\Blog\Post\CreateRequest;
 use App\Http\Requests\Admin\Blog\Post\UpdateRequest;
 use App\Models\Category;
+use App\Models\Comment;
 use App\Models\Post;
 use App\Providers\RouteServiceProvider;
 use Exception;
@@ -244,6 +246,87 @@ class PostController extends Controller
                 'message' => 'Delete Data Success',
                 'data' => null
             ], Response::HTTP_OK);
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            Log::exception($e, __METHOD__);
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @param Request $request
+     * @param Post $post
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function getAllComment(Request $request, Post $post): JsonResponse
+    {
+        try {
+            $data = Comment::with(['children', 'creator'])->where([
+                'parent_id' => null,
+                'commentable_id' => $post->id,
+                'commentable_type' => Post::class
+            ])->latest()->get();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Get All Comment Success',
+                'data' => $this->convertCommentTohierarchy($data)
+            ], Response::HTTP_OK);
+        } catch (Exception $e) {
+            Log::exception($e, __METHOD__);
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Convert comment to hierarchy.
+     *
+     * @param $data
+     * @return mixed
+     */
+    private function convertCommentToHierarchy($data): mixed
+    {
+        foreach ($data as $datum) {
+            $datum = Comment::with('children')->find($datum->id);
+
+            if ($datum->children->isNotEmpty()) {
+                $datum->children = $this->convertCommentToHierarchy($datum->children);
+            }
+        }
+
+        return $data;
+    }
+
+    /**
+     * Store a new comment resource in storage.
+     *
+     * @param CommentRequest $request
+     * @param Post $post
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function storeComment(CommentRequest $request, Post $post): JsonResponse
+    {
+        try {
+            DB::beginTransaction();
+
+            $data = $request->validated();
+
+            $post->comments()->create($data);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Comment Success',
+                'data' => null
+            ], Response::HTTP_CREATED);
         } catch (Exception $e) {
             DB::rollBack();
 

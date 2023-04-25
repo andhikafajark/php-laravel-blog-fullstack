@@ -22,6 +22,12 @@ Route::name('pages.')->group(function () {
     Route::get('/', [PagesController::class, 'index'])->name('index');
     Route::get('contact', [PagesController::class, 'contact'])->name('contact');
     Route::get('post/{post:slug}', [PagesController::class, 'post'])->name('post');
+
+    // Post
+    Route::name('post.')->group(function () {
+        Route::get('post/{post:slug}/comment', [PostController::class, 'getAllComment'])->name('comment.get-all');
+        Route::post('post/{post:slug}/comment', [PostController::class, 'storeComment'])->name('comment.store');
+    });
 });
 
 Route::name('auth.')->group(function () {

@@ -3,7 +3,8 @@ const defaultTheme = require("tailwindcss/defaultTheme");
 /** @type {import('tailwindcss').Config} */
 module.exports = {
     content: [
-        "./resources/**/*.{blade.php,jsx,ts,tsx,vue}"
+        "./resources/**/*.{blade.php,jsx,ts,tsx,vue}",
+        "./node_modules/flowbite/**/*.js"
     ],
     safelist: ["dark"],
     darkMode: "class",
@@ -296,5 +297,6 @@ module.exports = {
             modifiers: [],
         }),
         require("@tailwindcss/forms"),
+        require('flowbite/plugin')
     ],
 }

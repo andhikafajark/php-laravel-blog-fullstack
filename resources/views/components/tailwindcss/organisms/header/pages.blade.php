@@ -42,7 +42,7 @@
 
     {{--    <link crossorigin="anonymous" href="{{ asset('assets') }}/styles/main.min.css" media="screen" rel="stylesheet"/>--}}
 
-    @vite('resources/css/app.css')
+    @vite(['resources/css/app.css','resources/js/app.js'])
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
 

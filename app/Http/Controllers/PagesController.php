@@ -51,8 +51,8 @@ class PagesController extends Controller
     public function post(Request $request, Post $post): View|Factory|Application
     {
         $data = [
-            'title' => 'Contact',
-            'post' => $post->with(['categories', 'creator', 'headlineImage'])->find($post->id),
+            'title' => $post->title ?? '',
+            'post' => $post->with(['categories', 'comments', 'creator', 'headlineImage'])->find($post->id),
             'previous' => Post::where('id', '<', $post->id)->latest('id')->first(),
             'next' => Post::where('id', '>', $post->id)->oldest('id')->first(),
         ];

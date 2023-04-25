@@ -7,6 +7,7 @@ use App\Traits\HasUUID;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class Post extends Model
@@ -58,6 +59,19 @@ class Post extends Model
     public function headlineImage(): BelongsTo
     {
         return $this->belongsTo(File::class, 'headline_image_id');
+    }
+
+    /**
+     * Get all the comments for the post.
+     *
+     * @return MorphMany
+     */
+    public function comments(): MorphMany
+    {
+        return $this->morphMany(Comment::class, 'commentable')
+            ->whereNull('parent_id')
+            ->latest()
+            ->with('children');
     }
 
     /**
