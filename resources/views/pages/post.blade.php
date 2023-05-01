@@ -90,12 +90,12 @@
             <section class="bg-white dark:bg-gray-900 py-8 lg:py-16 border-t border-gray-200 dark:border-gray-700">
                 <div class="max-w-2xl mx-auto px-4">
                     <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-lg lg:text-2xl font-bold text-gray-900 dark:text-white">Comments (<span
-                                id="total-comments">0</span>)</h2>
+                        <h2 class="text-lg lg:text-2xl font-bold text-gray-900 dark:text-white">
+                            Comments (<span id="total-comments">0</span>)
+                        </h2>
                     </div>
                     <form id="form" action="{{ route('pages.post.comment.store', ($post->slug ?? null)) }}"
-                          method="post"
-                          class="mb-6">
+                          method="post" class="mb-6">
                         <div
                             class="py-2 px-4 mb-4 bg-white rounded-lg rounded-t-lg border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
                             <label for="comment" class="sr-only">Your comment</label>
@@ -122,6 +122,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
     <script src="https://unpkg.com/flowbite@1.4.4/dist/flowbite.js"></script>
     <script>
+        let dropdownComments = []
+
         $(document).ready(function () {
             init()
             handler()
@@ -132,6 +134,7 @@
         }
 
         function handler() {
+            // Create Comment
             $('#form').validate({
                 submitHandler: function (form, e) {
                     e.preventDefault()
@@ -153,6 +156,7 @@
                 }
             })
 
+            // Reply Comment
             $(document).on('click', 'button[data-type="reply-button"]', function () {
                 const parentElement = $(this).closest('[data-type="reply-button-container"]')
 
@@ -208,6 +212,108 @@
                     },
                 })
             })
+
+            // Edit Comment
+            $(document).on('click', 'button[data-type="edit-comment-button"]', function () {
+                const commentUuid = $(this).data('uuid')
+                const parentCommentHeaderContainerElement = $(this).closest('[data-type="comment-header-container"]')
+                const commentContainerElement = parentCommentHeaderContainerElement.siblings('[data-type="comment-container"]')
+
+                dropdownComments[parentCommentHeaderContainerElement.data('index')].hide()
+
+                $('body form[data-type="form-comment-edit"]').remove()
+                $('body div[data-type="comment-container"]').removeClass('hidden')
+
+                commentContainerElement.addClass('hidden')
+
+                const formComment = `
+                    <form id="form" action="${('{{ route('pages.post.comment.update', [($post->slug ?? null), 'COMMENT_UUID']) }}').replace('COMMENT_UUID', commentUuid)}" method="post" data-type="form-comment-edit">
+                        <input type="hidden" name="_method" value="put">
+                        <div
+                            class="py-2 px-4 mb-4 bg-white rounded-lg rounded-t-lg border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+                            <label for="comment" class="sr-only">Your comment</label>
+                            <textarea id="comment" name="comment" rows="6" placeholder="Write a comment..." required
+                                      class="px-0 w-full text-sm text-gray-900 border-0 focus:ring-0 focus:outline-none dark:text-white dark:placeholder-gray-400 dark:bg-gray-800">${commentContainerElement.html()}</textarea>
+                            <label id="comment-error" class="error text-xs text-red-500" for="comment"></label>
+                        </div>
+                        <div class="flex gap-2">
+                            <button type="submit"
+                                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                Edit comment
+                            </button>
+                            <button type="button" data-type="cancel-edit-comment"
+                                    class="text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
+                                Cancel
+                            </button>
+                        </div>
+                    </form>`
+
+                parentCommentHeaderContainerElement.siblings('[data-type="comment-container"]').after(formComment)
+            })
+
+            $(document).on('click', 'button[data-type="cancel-edit-comment"]', function () {
+                const parentFormCommentEditElement = $(this).closest('[data-type="form-comment-edit"]')
+
+                parentFormCommentEditElement.siblings('[data-type="comment-container"]').removeClass('hidden')
+                parentFormCommentEditElement.remove()
+            })
+
+            $(document).on('submit', 'form[data-type="form-comment-edit"]', function (e) {
+                e.preventDefault()
+
+                const form = this
+
+                callApiWithForm(form, {
+                    success: function (response) {
+                        if (response?.success) {
+                            showAlert({
+                                icon: 'success',
+                                title: response?.message,
+                                timer: 1500
+                            })
+
+                            $(form).trigger('reset')
+                            initComment()
+                        }
+                    },
+                })
+            })
+
+            // Remove Comment
+            $(document).on('click', 'button[data-type="remove-comment-button"]', async function () {
+                const commentUuid = $(this).data('uuid')
+
+                const resAlert = await showAlertConfirm({
+                    confirmButtonColor: '#d33'
+                })
+
+                if (!resAlert) return;
+
+                const url = ('{{ route('pages.post.comment.destroy', [($post->slug ?? null), 'COMMENT_UUID']) }}').replace('COMMENT_UUID', commentUuid)
+
+                await apiCall({
+                    url,
+                    type: 'delete',
+                    success: function (response) {
+                        if (response?.success) {
+                            showAlert({
+                                icon: 'success',
+                                title: response?.message,
+                                timer: 1500
+                            })
+
+                            initComment()
+                        }
+                    }
+                })
+            })
+
+            // Report Comment
+            $(document).on('click', 'button[data-type="report-comment-button"]', function () {
+                console.log(this)
+                console.log($(this))
+                console.log($(this).data('uuid'))
+            })
         }
 
         async function initComment() {
@@ -228,13 +334,15 @@
                 day: 'numeric'
             }
 
+            dropdownComments = []
             $('#comments-container').empty()
+            let increment = 0
 
             const generateComment = (data, index = 0) => {
                 return data.forEach((datum, i) => {
                     const comment = `
                         <article class="p-6 text-base bg-white border-gray-200 dark:border-gray-700 dark:bg-gray-900 ${index === 0 ? 'border-t' : ''}" style="margin-left: ${index * 1.5}rem;">
-                            <footer class="flex justify-between items-center mb-2">
+                            <header class="flex justify-between items-center mb-2" data-type="comment-header-container" data-index="${increment}">
                                 <div class="flex items-center">
                                     <p class="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white">
                                         <img
@@ -255,26 +363,21 @@
                                     <span class="sr-only">Comment settings</span>
                                 </button>
                                 <!-- Dropdown menu -->
-                                <div id="dropdownComment${index}${datum?.uuid || null}"
-                                     class="hidden z-10 w-36 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600">
-                                    <ul class="py-1 text-sm text-gray-700 dark:text-gray-200"
-                                        aria-labelledby="dropdownMenuIconHorizontalButton">
+                                <div id="dropdownComment${index}${datum?.uuid || null}" class="hidden z-10 w-36 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600">
+                                    <ul class="py-1 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownMenuIconHorizontalButton">
                                         <li>
-                                            <a href="#"
-                                               class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Edit</a>
+                                            <button type="button" data-type="edit-comment-button" data-uuid="${datum?.uuid || null}" class="block w-full text-left py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Edit</button>
                                         </li>
                                         <li>
-                                            <a href="#"
-                                               class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Remove</a>
+                                            <button type="button" data-type="remove-comment-button" data-uuid="${datum?.uuid || null}" class="block w-full text-left py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Remove</button>
                                         </li>
                                         <li>
-                                            <a href="#"
-                                               class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Report</a>
+                                            <button type="button" data-type="report-comment-button" data-uuid="${datum?.uuid || null}" class="block w-full text-left py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Report</button>
                                         </li>
                                     </ul>
                                 </div>
-                            </footer>
-                            <p class="text-gray-500 dark:text-gray-400">${datum?.comment || ''}</p>
+                            </header>
+                            <div class="text-gray-500 dark:text-gray-400" data-type="comment-container">${datum?.comment || ''}</div>
                             <div class="flex items-center my-4 space-x-4" data-type="reply-button-container">
                                 <button type="button" data-type="reply-button" data-parent-id="${datum?.id || null}"
                                         class="flex items-center text-sm text-gray-500 hover:underline dark:text-gray-400">
@@ -290,19 +393,19 @@
 
                     $('#comments-container').append(comment)
 
-                    totalComments++
-
-                    if (datum?.children?.length > 0) {
-                        generateComment(datum.children, (index + 1))
-                    }
-
-                    new Dropdown(
+                    dropdownComments[increment++] = new Dropdown(
                         document.getElementById(`dropdownComment${index}${datum?.uuid || null}`),
                         document.getElementById(`dropdownComment${index}${datum?.uuid || null}Button`),
                         {
                             placement: 'bottom'
                         }
                     )
+
+                    totalComments++
+
+                    if (datum?.children?.length > 0) {
+                        generateComment(datum.children, (index + 1))
+                    }
                 })
             }
 

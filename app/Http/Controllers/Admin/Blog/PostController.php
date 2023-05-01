@@ -5,7 +5,8 @@ namespace App\Http\Controllers\Admin\Blog;
 use App\Helpers\File;
 use App\Helpers\Log;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\Blog\Post\CommentRequest;
+use App\Http\Requests\Admin\Blog\Post\CommentCreateRequest;
+use App\Http\Requests\Admin\Blog\Post\CommentUpdateRequest;
 use App\Http\Requests\Admin\Blog\Post\CreateRequest;
 use App\Http\Requests\Admin\Blog\Post\UpdateRequest;
 use App\Models\Category;
@@ -285,33 +286,14 @@ class PostController extends Controller
     }
 
     /**
-     * Convert comment to hierarchy.
-     *
-     * @param $data
-     * @return mixed
-     */
-    private function convertCommentToHierarchy($data): mixed
-    {
-        foreach ($data as $datum) {
-            $datum = Comment::with('children')->find($datum->id);
-
-            if ($datum->children->isNotEmpty()) {
-                $datum->children = $this->convertCommentToHierarchy($datum->children);
-            }
-        }
-
-        return $data;
-    }
-
-    /**
      * Store a new comment resource in storage.
      *
-     * @param CommentRequest $request
+     * @param CommentCreateRequest $request
      * @param Post $post
      * @return JsonResponse
      * @throws Exception
      */
-    public function storeComment(CommentRequest $request, Post $post): JsonResponse
+    public function storeComment(CommentCreateRequest $request, Post $post): JsonResponse
     {
         try {
             DB::beginTransaction();
@@ -333,6 +315,115 @@ class PostController extends Controller
             Log::exception($e, __METHOD__);
 
             throw $e;
+        }
+    }
+
+    /**
+     * Update the comment resource in storage.
+     *
+     * @param CommentUpdateRequest $request
+     * @param Post $post
+     * @param $commentUUID
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function updateComment(CommentUpdateRequest $request, Post $post, $commentUUID): JsonResponse
+    {
+        try {
+            DB::beginTransaction();
+
+            $data = $request->validated();
+
+            $comment = Comment::where('uuid', $commentUUID)->firstOrFail();
+            $comment->update($data);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Update Comment Success',
+                'data' => null
+            ], Response::HTTP_CREATED);
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            Log::exception($e, __METHOD__);
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Remove the comment resource from storage.
+     *
+     * @param Request $request
+     * @param Post $post
+     * @param $commentUUID
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function destroyComment(Request $request, Post $post, $commentUUID): JsonResponse
+    {
+        try {
+            DB::beginTransaction();
+
+            $comment = Comment::where('uuid', $commentUUID)->firstOrFail();
+            $this->deleteCommentRecursive($comment->id);
+            $comment->delete();
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Remove Comment Success',
+                'data' => null
+            ], Response::HTTP_CREATED);
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            Log::exception($e, __METHOD__);
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Convert comment to hierarchy.
+     *
+     * @param $data
+     * @return mixed
+     */
+    private function convertCommentToHierarchy($data): mixed
+    {
+        foreach ($data as $datum) {
+            $datum = Comment::with('children')->find($datum->id);
+
+            if ($datum->children->isNotEmpty()) {
+                $datum->children = $this->convertCommentToHierarchy($datum->children);
+            }
+        }
+
+        return $data;
+    }
+
+    /**
+     * Delete comment with recursive.
+     *
+     * @param $id
+     * @return void
+     */
+    private function deleteCommentRecursive($id): void
+    {
+        $data = Comment::with('children')->where('parent_id', $id)->get();
+
+        foreach ($data as $datum) {
+            $datum = Comment::with('children')->find($datum->id);
+
+            if ($datum->children->isNotEmpty()) {
+                $this->deleteCommentRecursive($datum->children);
+            }
+
+            $datum->delete();
         }
     }
 }

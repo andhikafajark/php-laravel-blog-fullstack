@@ -27,6 +27,8 @@ Route::name('pages.')->group(function () {
     Route::name('post.')->group(function () {
         Route::get('post/{post:slug}/comment', [PostController::class, 'getAllComment'])->name('comment.get-all');
         Route::post('post/{post:slug}/comment', [PostController::class, 'storeComment'])->name('comment.store');
+        Route::put('post/{post:slug}/comment/{comment:uuid}', [PostController::class, 'updateComment'])->name('comment.update');
+        Route::delete('post/{post:slug}/comment/{comment:uuid}', [PostController::class, 'destroyComment'])->name('comment.destroy');
     });
 });
 
