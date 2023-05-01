@@ -114,6 +114,34 @@
         </div>
     </div>
 
+    <div id="report-modal" tabindex="-1" aria-hidden="true"
+         class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+        <div class="relative w-full max-w-2xl max-h-full">
+            <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+                <div class="flex items-start justify-between p-5 border-b rounded-t dark:border-gray-600">
+                    <h3 class="text-xl font-semibold text-gray-900 lg:text-2xl dark:text-white">
+                        Report Comment
+                    </h3>
+                </div>
+                <div class="p-6 space-y-6">
+                    <form id="form-report-comment" action="javascript:void(0)" method="post">
+                        <div
+                            class="py-2 px-4 mb-4 bg-white rounded-lg rounded-t-lg border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+                            <label for="report" class="sr-only">Your report</label>
+                            <textarea id="report" name="report" rows="6" placeholder="Write a report..." required
+                                      class="px-0 w-full text-sm text-gray-900 border-0 focus:ring-0 focus:outline-none dark:text-white dark:placeholder-gray-400 dark:bg-gray-800"></textarea>
+                            <label id="report-error" class="error text-xs text-red-500" for="report"></label>
+                        </div>
+                        <button type="submit"
+                                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                            Send report
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
 @endsection
 
 @push('scripts')
@@ -123,6 +151,7 @@
     <script src="https://unpkg.com/flowbite@1.4.4/dist/flowbite.js"></script>
     <script>
         let dropdownComments = []
+        let modalReport = null
 
         $(document).ready(function () {
             init()
@@ -131,6 +160,8 @@
 
         function init() {
             initComment()
+
+            modalReport = new Modal(document.getElementById('report-modal'))
         }
 
         function handler() {
@@ -219,7 +250,7 @@
                 const parentCommentHeaderContainerElement = $(this).closest('[data-type="comment-header-container"]')
                 const commentContainerElement = parentCommentHeaderContainerElement.siblings('[data-type="comment-container"]')
 
-                dropdownComments[parentCommentHeaderContainerElement.data('index')].hide()
+                dropdownComments[parentCommentHeaderContainerElement.data('index')].dropdown.hide()
 
                 $('body form[data-type="form-comment-edit"]').remove()
                 $('body div[data-type="comment-container"]').removeClass('hidden')
@@ -310,9 +341,35 @@
 
             // Report Comment
             $(document).on('click', 'button[data-type="report-comment-button"]', function () {
-                console.log(this)
-                console.log($(this))
-                console.log($(this).data('uuid'))
+                const commentUuid = $(this).data('uuid')
+
+                $('#form-report-comment')
+                    .attr('action', ('{{ route('pages.post.comment.report', [($post->slug ?? null), 'COMMENT_UUID']) }}').replace('COMMENT_UUID', commentUuid))
+                    .trigger('reset')
+
+                modalReport.show()
+            })
+
+            $('#form-report-comment').validate({
+                submitHandler: function (form, e) {
+                    e.preventDefault()
+
+                    callApiWithForm(form, {
+                        success: function (response) {
+                            if (response?.success) {
+                                showAlert({
+                                    icon: 'success',
+                                    title: response?.message,
+                                    timer: 1500
+                                })
+
+                                $(form).trigger('reset')
+                                modalReport.hide()
+                                initComment()
+                            }
+                        },
+                    })
+                }
             })
         }
 
@@ -339,7 +396,7 @@
             let increment = 0
 
             const generateComment = (data, index = 0) => {
-                return data.forEach((datum, i) => {
+                return data.forEach((datum) => {
                     const comment = `
                         <article class="p-6 text-base bg-white border-gray-200 dark:border-gray-700 dark:bg-gray-900 ${index === 0 ? 'border-t' : ''}" style="margin-left: ${index * 1.5}rem;">
                             <header class="flex justify-between items-center mb-2" data-type="comment-header-container" data-index="${increment}">
@@ -372,7 +429,7 @@
                                             <button type="button" data-type="remove-comment-button" data-uuid="${datum?.uuid || null}" class="block w-full text-left py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Remove</button>
                                         </li>
                                         <li>
-                                            <button type="button" data-type="report-comment-button" data-uuid="${datum?.uuid || null}" class="block w-full text-left py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Report</button>
+                                            <button type="button" data-type="report-comment-button" data-uuid="${datum?.uuid || null}" data-modal-target="report-modal" data-modal-toggle="report-modal" class="block w-full text-left py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Report</button>
                                         </li>
                                     </ul>
                                 </div>
@@ -393,13 +450,15 @@
 
                     $('#comments-container').append(comment)
 
-                    dropdownComments[increment++] = new Dropdown(
-                        document.getElementById(`dropdownComment${index}${datum?.uuid || null}`),
-                        document.getElementById(`dropdownComment${index}${datum?.uuid || null}Button`),
-                        {
-                            placement: 'bottom'
-                        }
-                    )
+                    dropdownComments[increment++] = {
+                        dropdown: new Dropdown(
+                            document.getElementById(`dropdownComment${index}${datum?.uuid || null}`),
+                            document.getElementById(`dropdownComment${index}${datum?.uuid || null}Button`),
+                            {
+                                placement: 'bottom'
+                            }
+                        )
+                    }
 
                     totalComments++
 
@@ -411,8 +470,7 @@
 
             generateComment(resData.data)
 
-            $('#total-comments').html(totalComments)
-        }
+            $('#total-comments').html(totalComments)}
     </script>
 
 @endpush

@@ -29,6 +29,7 @@ Route::name('pages.')->group(function () {
         Route::post('post/{post:slug}/comment', [PostController::class, 'storeComment'])->name('comment.store');
         Route::put('post/{post:slug}/comment/{comment:uuid}', [PostController::class, 'updateComment'])->name('comment.update');
         Route::delete('post/{post:slug}/comment/{comment:uuid}', [PostController::class, 'destroyComment'])->name('comment.destroy');
+        Route::post('post/{post:slug}/comment/{comment:uuid}/report', [PostController::class, 'reportComment'])->name('comment.report');
     });
 });
 

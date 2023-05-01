@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Blog\Post\CommentCreateRequest;
 use App\Http\Requests\Admin\Blog\Post\CommentUpdateRequest;
 use App\Http\Requests\Admin\Blog\Post\CreateRequest;
+use App\Http\Requests\Admin\Blog\Post\ReportRequest;
 use App\Http\Requests\Admin\Blog\Post\UpdateRequest;
 use App\Models\Category;
 use App\Models\Comment;
@@ -343,7 +344,7 @@ class PostController extends Controller
                 'success' => true,
                 'message' => 'Update Comment Success',
                 'data' => null
-            ], Response::HTTP_CREATED);
+            ], Response::HTTP_OK);
         } catch (Exception $e) {
             DB::rollBack();
 
@@ -376,6 +377,42 @@ class PostController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Remove Comment Success',
+                'data' => null
+            ], Response::HTTP_OK);
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            Log::exception($e, __METHOD__);
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Report the comment resource from storage.
+     *
+     * @param ReportRequest $request
+     * @param Post $post
+     * @param $commentUUID
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function reportComment(ReportRequest $request, Post $post, $commentUUID): JsonResponse
+    {
+        try {
+            DB::beginTransaction();
+
+            $comment = Comment::where('uuid', $commentUUID)->firstOrFail();
+
+            $data = $request->validated();
+
+            $comment->reports()->create($data);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Report Comment Success',
                 'data' => null
             ], Response::HTTP_CREATED);
         } catch (Exception $e) {
