@@ -8,11 +8,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Blog\Post\CommentCreateRequest;
 use App\Http\Requests\Admin\Blog\Post\CommentUpdateRequest;
 use App\Http\Requests\Admin\Blog\Post\CreateRequest;
+use App\Http\Requests\Admin\Blog\Post\ReportApproveRequest;
 use App\Http\Requests\Admin\Blog\Post\ReportRequest;
 use App\Http\Requests\Admin\Blog\Post\UpdateRequest;
 use App\Models\Category;
 use App\Models\Comment;
 use App\Models\Post;
+use App\Models\Report;
 use App\Providers\RouteServiceProvider;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
@@ -415,6 +417,123 @@ class PostController extends Controller
                 'message' => 'Report Comment Success',
                 'data' => null
             ], Response::HTTP_CREATED);
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            Log::exception($e, __METHOD__);
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Display a listing of the comment report.
+     *
+     * @param Request $request
+     * @return Application|Factory|View|JsonResponse
+     * @throws Exception
+     */
+    public function commentReportIndex(Request $request): View|Factory|JsonResponse|Application
+    {
+        view()->share([
+            'route' => 'admin.blog.post.comment.report.',
+            'title' => 'Comment Report'
+        ]);
+
+        if ($request->ajax()) {
+            $data = Report::with('creator')
+                ->where(['reportable_type' => Comment::class])
+                ->newQuery();
+
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->addColumn('report', function ($data) {
+                    return str($data->report ?? '')->limit(50);
+                })
+                ->addColumn('creator', function ($data) {
+                    return $data->creator->name ?? 'Anonymous';
+                })
+                ->addColumn('status', function ($data) {
+                    return match ($data->is_approved) {
+                        1 => 'Approved',
+                        0 => 'Rejected',
+                        default => 'Waiting for Approve'
+                    };
+                })
+                ->addColumn('action', function ($data) {
+                    return view($this->_routeView . 'components.comment-report-action-datatables', compact('data'));
+                })
+                ->rawColumns(['action'])
+                ->toJson();
+        }
+
+        $data = [
+            'breadcrumbs' => [
+                'Dashboard' => RouteServiceProvider::HOME,
+                'Comment Report' => null
+            ]
+        ];
+
+        return view($this->_routeView . str(__FUNCTION__)->snake('-'), $data);
+    }
+
+    /**
+     * Show the form for approval the specified comment report.
+     *
+     * @param Report $report
+     * @return Application|Factory|View
+     */
+    public function commentReportShow(Report $report): View|Factory|Application
+    {
+        view()->share([
+            'route' => 'admin.blog.post.comment.report.',
+            'title' => 'Comment Report'
+        ]);
+
+        $data = [
+            'title' => 'Show Comment Report',
+            'breadcrumbs' => [
+                'Dashboard' => RouteServiceProvider::HOME,
+                'Comment Report' => 'admin.blog.post.comment.report.index',
+                'Show' => null
+            ],
+            'report' => $report
+        ];
+
+        return view($this->_routeView . str(__FUNCTION__)->snake('-'), $data);
+    }
+
+    /**
+     * Update the specified comment report in storage.
+     *
+     * @param ReportApproveRequest $request
+     * @param Report $report
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function commentReportApprove(ReportApproveRequest $request, Report $report): JsonResponse
+    {
+        try {
+            DB::beginTransaction();
+
+            $data = $request->validated();
+
+            if (!($report->reportable instanceof Comment)) throw new Exception('Invalid Type of Report Data');
+
+            if ($data['is_approved']) {
+                $this->deleteCommentRecursive($report->reportable->id);
+                $report->reportable->delete();
+            }
+
+            $report->update($data);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Approve Data Success',
+                'data' => null
+            ], Response::HTTP_OK);
         } catch (Exception $e) {
             DB::rollBack();
 

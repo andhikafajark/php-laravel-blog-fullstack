@@ -25,7 +25,7 @@ class Report extends Model
      *
      * @return MorphTo
      */
-    public function commentable(): MorphTo
+    public function reportable(): MorphTo
     {
         return $this->morphTo();
     }

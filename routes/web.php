@@ -46,6 +46,13 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     // Blog
     Route::name('blog.')->group(function () {
         // Post
+        Route::name('post.')->group(function () {
+            Route::name('comment.report.')->group(function () {
+                Route::get('comment-report', [PostController::class, 'commentReportIndex'])->name('index');
+                Route::get('comment-report/{report:uuid}', [PostController::class, 'commentReportShow'])->name('show');
+                Route::put('comment-report/{report:uuid}/approve', [PostController::class, 'commentReportApprove'])->name('approve');
+            });
+        });
         Route::resource('post', PostController::class, [
             'except' => ['show']
         ]);
